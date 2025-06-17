@@ -6,9 +6,13 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func handlerGet(c *fiber.Ctx) error {
-	fmt.Fprintf(c, "%s\n", c.Params("Name"))
-	fmt.Fprintf(c, "%s\n", c.Params("Age"))
+func HandlerGet(c *fiber.Ctx) error {
+	fmt.Print("Practicing Get")
+
+	return nil
+}
+
+func HandlerPost(c *fiber.Ctx) error {
 
 	return nil
 }

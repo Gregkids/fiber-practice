@@ -1,11 +1,15 @@
 package main
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"api.fiber.practice/controller"
+	"github.com/gofiber/fiber/v2"
+)
 
 func main() {
 	app := fiber.New()
 
-	app.Get("/")
+	app.Get("/get", controller.HandlerGet)
+	app.Post("/post", controller.HandlerPost)
 
 	app.Listen(":3000")
 }
