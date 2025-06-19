@@ -9,6 +9,7 @@ func main() {
 	app := fiber.New()
 
 	app.Get("/names", controller.HandlerGetNames)
+	app.Post("/add-name", controller.HandlerCreateName)
 
 	app.Listen(":3000")
 }
