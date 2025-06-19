@@ -8,7 +8,14 @@ type Name struct {
 	LastName   string `json:"last_name"`
 }
 
-var names = []Name{}
+var names = []Name{
+	{FirstName: "Gian", MiddleName: "Indra", LastName: "Nugraha"},
+	{FirstName: "Indra", MiddleName: "Gian", LastName: "Indra"},
+}
+
+func TestGetNames() []Name {
+	return names
+}
 
 func CreateName(c *fiber.Ctx) error {
 	newName := new(Name)

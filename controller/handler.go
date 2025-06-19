@@ -1,18 +1,15 @@
 package controller
 
 import (
-	"fmt"
-
+	"api.fiber.practice/models"
 	"github.com/gofiber/fiber/v2"
 )
 
-func HandlerGet(c *fiber.Ctx) error {
-	fmt.Print("Practicing Get")
-
-	return nil
+func HandlerGetNames(c *fiber.Ctx) error {
+	return c.JSON(models.TestGetNames)
 }
 
-func HandlerPost(c *fiber.Ctx) error {
+func HandlerCreateName(c *fiber.Ctx) error {
 
 	return nil
 }
