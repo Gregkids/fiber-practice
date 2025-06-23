@@ -5,13 +5,13 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-var names = []models.FullName{
+var names = []models.FullNameReq{
 	{FirstName: "Gian", MiddleName: "Indra", LastName: "Nugraha"},
 	{FirstName: "John", LastName: "Doe"},
 }
 
 func HandlerCreateName(c *fiber.Ctx) error {
-	newName := new(models.FullName)
+	newName := new(models.FullNameReq)
 
 	err := c.BodyParser(newName)
 	if err != nil {
@@ -85,7 +85,7 @@ func HandlerUpdateName(c *fiber.Ctx) error {
 	}
 
 	// Parse the New Name
-	newName := new(models.FullName)
+	newName := new(models.FullNameReq)
 	err = c.BodyParser(newName)
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{
