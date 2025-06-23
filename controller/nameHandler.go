@@ -1,7 +1,10 @@
 package controller
 
 import (
+	"database/sql"
+
 	"api.fiber.practice/models"
+	"api.fiber.practice/repository"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -40,7 +43,32 @@ func HandlerCreateName(c *fiber.Ctx) error {
 }
 
 func HandlerGetNames(c *fiber.Ctx) error {
-	return c.JSON(names)
+	db, err := sql.Open("postgres", "host=localhost user=postgres password=darageta dbname=gofiber_test sslmode=disable")
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"code":   500,
+			"status": "SQL Error",
+			"msg":    err.Error(),
+		})
+	}
+
+	// Parse Database
+	r := repository.NameSQL{DB: db}
+
+	ret, err := r.DBGetAllName()
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"code":   400,
+			"status": "error",
+			"msg":    err.Error(),
+		})
+	}
+
+	return c.Status(200).JSON(fiber.Map{
+		"code":   200,
+		"status": "success",
+		"msg":    ret,
+	})
 }
 
 func HandlerGetOneName(c *fiber.Ctx) error {

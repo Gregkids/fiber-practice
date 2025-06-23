@@ -10,7 +10,7 @@ type NameSQL struct {
 	DB *sql.DB
 }
 
-func (m NameSQL) DBGetAllName(req models.FullNameReq) ([]models.FullNameRet, error) {
+func (m NameSQL) DBGetAllName() ([]models.FullNameRet, error) {
 	ret := []models.FullNameRet{}
 
 	// Query Get All Names
