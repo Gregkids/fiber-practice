@@ -7,35 +7,6 @@ import (
 
 var names = []models.FullNameRet{}
 
-func HandlerCreateName(c *fiber.Ctx) error {
-	newName := new(models.FullNameRet)
-
-	err := c.BodyParser(newName)
-	if err != nil {
-		return c.Status(400).JSON(fiber.Map{
-			"code":   400,
-			"status": "error",
-			"msg":    err.Error(),
-		})
-	}
-
-	if newName.FirstName == "" {
-		return c.Status(400).JSON(fiber.Map{
-			"code":   400,
-			"status": "error",
-			"msg":    "Name Required",
-		})
-	}
-
-	names = append(names, *newName)
-
-	return c.Status(201).JSON(fiber.Map{
-		"code":   201,
-		"status": "success",
-		"msg":    "Name Added",
-	})
-}
-
 func HandlerUpdateName(c *fiber.Ctx) error {
 	// Getting the Full Name first
 	i, err := c.ParamsInt("id")
