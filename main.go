@@ -9,7 +9,7 @@ func main() {
 	app := fiber.New()
 
 	app.Get("/names", controller.HandlerGetNames)
-	app.Get("/name/:id", controller.HandlerGetOneName)
+	app.Get("/name/:id", controller.HandlerGetName)
 	app.Post("/add-name", controller.HandlerCreateName)
 	app.Put("/change-name/:id", controller.HandlerUpdateName)
 	app.Delete("/delete-name/:id", controller.HandlerDeleteName)
