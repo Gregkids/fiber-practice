@@ -9,6 +9,7 @@ import (
 )
 
 func HandlerCreateName(c *fiber.Ctx) error {
+	// Connecting to Database
 	db, err := sql.Open("postgres", "host=localhost user=postgres password=darageta dbname=postgres sslmode=disable")
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
@@ -22,9 +23,18 @@ func HandlerCreateName(c *fiber.Ctx) error {
 	r := repository.NameSQL{DB: db}
 
 	// Declare Requests
-	req := models.FullNameReq{}
-	reqID, _ := c.ParamsInt("id")
+	req := new(models.FullNameReq)
+	reqID := c.QueryInt("id")
+	err = c.BodyParser(req)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"code":   400,
+			"status": "body Error",
+			"msg":    err.Error(),
+		})
+	}
 
+	// Execute Method
 	err = r.DBCreateName(req, reqID)
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{

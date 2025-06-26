@@ -70,7 +70,7 @@ func (sql NameSQL) DBGetFullName(reqID int) ([]models.FullNameRet, error) {
 	return ret, nil
 }
 
-func (sql NameSQL) DBCreateName(req models.FullNameReq, reqID int) error {
+func (sql NameSQL) DBCreateName(req *models.FullNameReq, reqID int) error {
 	ctx := context.Background()
 	tx, err := sql.DB.BeginTx(ctx, nil)
 	if err != nil {
