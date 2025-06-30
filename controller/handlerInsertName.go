@@ -23,9 +23,9 @@ func HandlerCreateName(c *fiber.Ctx) error {
 	r := repository.NameSQL{DB: db}
 
 	// Declare Requests
-	req := new(models.FullNameReq)
+	reqName := new(models.FullNameReq)
 	reqID := c.QueryInt("id")
-	err = c.BodyParser(req)
+	err = c.BodyParser(reqName)
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{
 			"code":   400,
@@ -35,7 +35,7 @@ func HandlerCreateName(c *fiber.Ctx) error {
 	}
 
 	// Execute Method
-	err = r.DBCreateName(req, reqID)
+	err = r.DBCreateName(reqName, reqID)
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{
 			"code":   400,

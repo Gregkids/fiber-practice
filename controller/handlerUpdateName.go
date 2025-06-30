@@ -3,11 +3,12 @@ package controller
 import (
 	"database/sql"
 
+	"api.fiber.practice/models"
 	"api.fiber.practice/repository"
 	"github.com/gofiber/fiber/v2"
 )
 
-func HandlerGetName(c *fiber.Ctx) error {
+func HandlerUpdateName(c *fiber.Ctx) error {
 	// Connecting to Database
 	db, err := sql.Open("postgres", "host=localhost user=postgres password=darageta dbname=postgres sslmode=disable")
 	if err != nil {
@@ -21,22 +22,31 @@ func HandlerGetName(c *fiber.Ctx) error {
 	// Parse Database
 	r := repository.NameSQL{DB: db}
 
-	// Declare Request
-	req := c.QueryInt("id")
-
-	// Execute Method
-	ret, err := r.DBGetFullName(req)
+	// Declare Requests
+	reqName := new(models.FullNameReq)
+	reqID := c.QueryInt("id")
+	err = c.BodyParser(reqName)
 	if err != nil {
-		return c.Status(401).JSON(fiber.Map{
-			"code":   401,
-			"status": "error",
+		return c.Status(400).JSON(fiber.Map{
+			"code":   400,
+			"status": "body Error",
 			"msg":    err.Error(),
 		})
 	}
 
-	return c.Status(200).JSON(fiber.Map{
-		"code":   200,
+	// Execute Method
+	err = r.DBUpdateName(reqName, reqID)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"code":   400,
+			"status": "Error",
+			"msg":    err.Error(),
+		})
+	}
+
+	return c.Status(201).JSON(fiber.Map{
+		"code":   201,
 		"status": "success",
-		"msg":    ret,
+		"msg":    "Name Added",
 	})
 }

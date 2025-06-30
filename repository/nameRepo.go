@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"strconv"
+	"errors"
 
 	"api.fiber.practice/models"
 	_ "github.com/lib/pq"
@@ -13,11 +13,11 @@ type NameSQL struct {
 	DB *sql.DB
 }
 
-func (sql NameSQL) DBGetAllName() ([]models.FullNameRet, error) {
+func (q *NameSQL) DBGetAllName() ([]models.FullNameRet, error) {
 	ret := []models.FullNameRet{}
 
 	// Query Get All Names
-	Q := `
+	query := `
 	SELECT
 		n.name_id,
 		n.first_name,
@@ -25,7 +25,7 @@ func (sql NameSQL) DBGetAllName() ([]models.FullNameRet, error) {
 		COALESCE(n.last_name, '') AS last_name
 	FROM public.full_name n `
 
-	rows, err := sql.DB.Query(Q)
+	rows, err := q.DB.Query(query)
 	if err != nil {
 		return nil, err
 	}
@@ -44,11 +44,11 @@ func (sql NameSQL) DBGetAllName() ([]models.FullNameRet, error) {
 	return ret, nil
 }
 
-func (sql NameSQL) DBGetFullName(reqID int) ([]models.FullNameRet, error) {
+func (q *NameSQL) DBGetFullName(reqID int) ([]models.FullNameRet, error) {
 	ret := []models.FullNameRet{}
 
 	// Query Get Name by Id
-	Q := `
+	query := `
 	SELECT
 		n.name_id,
 		n.first_name,
@@ -56,12 +56,13 @@ func (sql NameSQL) DBGetFullName(reqID int) ([]models.FullNameRet, error) {
 		COALESCE(n.last_name, '') AS last_name
 	FROM public.full_name n `
 
-	Q = Q + " WHERE n.name_id=" + strconv.Itoa(reqID)
-	row := sql.DB.QueryRow(Q, reqID)
+	query = query + " WHERE n.name_id=$1"
 	data := models.FullNameRet{}
-	err := row.Scan(&data.NameID, &data.FirstName, &data.MiddleName, &data.LastName)
+	err := q.DB.QueryRow(query, reqID).Scan(&data.NameID, &data.FirstName, &data.MiddleName, &data.LastName)
 
-	if err != nil {
+	if err == sql.ErrNoRows {
+		return nil, errors.New("data not found")
+	} else if err != nil {
 		return nil, err
 	}
 
@@ -70,9 +71,9 @@ func (sql NameSQL) DBGetFullName(reqID int) ([]models.FullNameRet, error) {
 	return ret, nil
 }
 
-func (sql NameSQL) DBCreateName(req *models.FullNameReq, reqID int) error {
+func (q *NameSQL) DBCreateName(req *models.FullNameReq, reqID int) error {
 	ctx := context.Background()
-	tx, err := sql.DB.BeginTx(ctx, nil)
+	tx, err := q.DB.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
@@ -97,4 +98,32 @@ func (sql NameSQL) DBCreateName(req *models.FullNameReq, reqID int) error {
 	} else {
 		return nil
 	}
+}
+
+func (q *NameSQL) DBUpdateName(req *models.FullNameReq, reqID int) error {
+	ctx := context.Background()
+	tx, err := q.DB.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	// Query Insert Name
+	query := `
+	UPDATE public.full_name
+	SET
+		first_name=$2, 
+		middle_name=$3, 
+		last_name=$4
+	WHERE name_id=$1; 
+	`
+	_, err = tx.Exec(query, reqID, req.FirstName, req.MiddleName, req.LastName)
+	if err == sql.ErrNoRows {
+		tx.Rollback()
+		return errors.New("data not found")
+	} else if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return nil
 }
