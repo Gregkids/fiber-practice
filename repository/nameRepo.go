@@ -86,7 +86,7 @@ func (q *NameSQL) DBCreateName(req *models.FullNameReq, reqID int) error {
 		($1, $2, $3, $4); 
 	`
 
-	_, err = tx.Exec(Q, reqID, req.FirstName, req.MiddleName, req.LastName)
+	_, err = tx.ExecContext(ctx, Q, reqID, req.FirstName, req.MiddleName, req.LastName)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -109,21 +109,21 @@ func (q *NameSQL) DBUpdateName(req *models.FullNameReq, reqID int) error {
 
 	// Query Insert Name
 	query := `
-	UPDATE public.full_name
-	SET
-		first_name=$2, 
-		middle_name=$3, 
-		last_name=$4
+	UPDATE public.full_name SET
+		first_name=$2, middle_name=$3, last_name=$4
 	WHERE name_id=$1; 
 	`
-	_, err = tx.Exec(query, reqID, req.FirstName, req.MiddleName, req.LastName)
-	if err == sql.ErrNoRows {
-		tx.Rollback()
-		return errors.New("data not found")
-	} else if err != nil {
+	_, err = tx.ExecContext(ctx, query, reqID, req.FirstName, req.MiddleName, req.LastName)
+
+	if err != nil {
 		tx.Rollback()
 		return err
 	}
 
-	return nil
+	err = tx.Commit()
+	if err != nil {
+		return err
+	} else {
+		return nil
+	}
 }

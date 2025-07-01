@@ -47,6 +47,6 @@ func HandlerUpdateName(c *fiber.Ctx) error {
 	return c.Status(201).JSON(fiber.Map{
 		"code":   201,
 		"status": "success",
-		"msg":    "Name Added",
+		"msg":    "Name Updated",
 	})
 }
