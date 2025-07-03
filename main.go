@@ -12,7 +12,7 @@ func main() {
 	app.Get("/name", controller.HandlerGetName)
 	app.Post("/add-name", controller.HandlerCreateName)
 	app.Put("/change-name", controller.HandlerUpdateName)
-	app.Delete("/delete-name/:id", controller.HandlerDeleteName)
+	app.Delete("/delete-name", controller.HandlerDeleteName)
 
 	app.Listen(":3000")
 }

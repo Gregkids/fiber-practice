@@ -3,12 +3,11 @@ package controller
 import (
 	"database/sql"
 
-	"api.fiber.practice/models"
 	"api.fiber.practice/repository"
 	"github.com/gofiber/fiber/v2"
 )
 
-func HandlerUpdateName(c *fiber.Ctx) error {
+func HandlerDeleteName(c *fiber.Ctx) error {
 	// Connecting to Database
 	db, err := sql.Open("postgres", "host=localhost user=postgres password=darageta dbname=postgres sslmode=disable")
 	if err != nil {
@@ -23,19 +22,10 @@ func HandlerUpdateName(c *fiber.Ctx) error {
 	r := repository.NameSQL{DB: db}
 
 	// Declare Requests
-	reqName := new(models.FullNameReq)
 	reqID := c.QueryInt("id")
-	err = c.BodyParser(reqName)
-	if err != nil {
-		return c.Status(400).JSON(fiber.Map{
-			"code":   400,
-			"status": "body Error",
-			"msg":    err.Error(),
-		})
-	}
 
 	// Execute Method
-	err = r.DBUpdateName(reqName, reqID)
+	err = r.DBDeleteName(reqID)
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{
 			"code":   400,
@@ -47,6 +37,6 @@ func HandlerUpdateName(c *fiber.Ctx) error {
 	return c.Status(201).JSON(fiber.Map{
 		"code":   201,
 		"status": "success",
-		"msg":    "Name Changed",
+		"msg":    "Name Removed",
 	})
 }

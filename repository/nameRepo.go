@@ -127,3 +127,30 @@ func (q *NameSQL) DBUpdateName(req *models.FullNameReq, reqID int) error {
 		return nil
 	}
 }
+
+func (q *NameSQL) DBDeleteName(reqID int) error {
+	ctx := context.Background()
+	tx, err := q.DB.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	// Query Insert Name
+	query := `
+	DELETE FROM public.full_name 
+		WHERE name_id=$1; 
+	`
+	_, err = tx.ExecContext(ctx, query, reqID)
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	} else {
+		return nil
+	}
+}
